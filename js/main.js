@@ -4,23 +4,22 @@
   window.requestAnimationFrame = requestAnimationFrame;
 })();
 
-function SourceCanvas() {
-	this.canvas = document.getElementById('sourceCanvas');
-	this.video = document.getElementById('video');
-	this.xParts = 300;
-	this.yParts = 200;
-	this.xSide = Math.floor($(window).width() / this.xParts);
-	this.ySide = Math.floor($(window).height() / this.yParts);
-	this.center = view.center;
-	this.currentFrame;
-	this.counter = 0;
-	this.blocks = [];
-};
 
-SourceCanvas.prototype.getStream = function() {
+	var canvas = document.getElementById('sourceCanvas');
+	var video = document.getElementById('video');
+	var width = $(window).width();
+		var height = $(window).height();	
+	var xParts = 300;
+	var yParts = 200;
+	var xSide = Math.floor(width / xParts);
+	var ySide = Math.floor(height / yParts);
+	var center = view.center;
+	var currentFrame;
+	var counter = 0;
+	var blocks = [];
 
-	this.canvas.width = $(window).width();
-	this.canvas.height = $(window).height();
+
+	function getStream() {
 
 	navigator.getMedia = navigator.getUserMedia || 
 		navigator.webkitGetUserMedia ||
@@ -33,9 +32,12 @@ SourceCanvas.prototype.getStream = function() {
    			video: true
    		},
  			function(localMediaStream){
- 				this.video.src = window.URL.createObjectURL(localMediaStream);
- 				this.video.onloadedmetadata = function(e) {
-		      render();
+ 				video.src = window.URL.createObjectURL(localMediaStream);
+ 				video.onloadedmetadata = function(e) {
+ 					setTimeout(function(){ 
+ 						onFrame(); 
+ 					}, 1000);
+		      
 		    }
 			},
 	   	function(e){
@@ -45,50 +47,52 @@ SourceCanvas.prototype.getStream = function() {
 	}
 }
 
-SourceCanvas.prototype.drawCanvas = function() {
-	var c = this.canvas.getContext('2d');
+function onFrame(event) {
+	var c = canvas.getContext('2d');
 	c.save();
 	c.scale(-1, 1);
-  c.drawImage(this.video, -this.canvas.width, 0, this.canvas.width, this.canvas.height);
+  c.drawImage(video, -width, 0, width, height);
   c.restore();
-  this.currentFrame = c.getImageData(0, 0, this.canvas.width, this.canvas.height);	 
+  currentFrame = c.getImageData(0, 0, width, height);	
+
+	var blocksNum = blocks.length;
+	for(var i = 0; i < blocksNum; i ++) {
+		blocks[i].update();
+	}
+
+	if (okGO) {
+		var newBlock = new Block();
+		blocks.push(newBlock);
+	}
+	
+
+	
 }
 
 function Block() {
-	var randomC = Math.floor(Math.random() * sourceCanvas.xParts);
-	var randomR = Math.floor(Math.random() * sourceCanvas.yParts);
+	var randomC = Math.floor(Math.random() * xParts);
+	var randomR = Math.floor(Math.random() * yParts);
 
-	var blockCenterX = randomC * sourceCanvas.xSide + Math.floor(sourceCanvas.xSide / 2);
-	var blockCenterY = randomR * sourceCanvas.ySide + Math.floor(sourceCanvas.ySide / 2);
+	var blockCenterX = randomC * xSide + Math.floor(xSide / 2);
+	var blockCenterY = randomR * ySide + Math.floor(ySide / 2);
 
-	this.pixelPos = (sourceCanvas.canvas.width * 4) * blockCenterY + blockCenterX * 4; //number
+	this.pixelPos = (width * 4) * blockCenterY + blockCenterX * 4; //number
 	this.radius = 50;
 	this.path = new Path.Circle(new Point(blockCenterX, blockCenterY), 20);
 }
 
 Block.prototype.update = function() {
-	var r = sourceCanvas.currentFrame.data[this.pixelPos];
-	var g = sourceCanvas.currentFrame.data[this.pixelPos + 1];
-	var b = sourceCanvas.currentFrame.data[this.pixelPos + 2];
+	var r = currentFrame.data[this.pixelPos];
+	var g = currentFrame.data[this.pixelPos + 1];
+	var b = currentFrame.data[this.pixelPos + 2];
 	this.path.fillColor = 'rgb('+ r + ',' + g + ',' + b + ')';
 	console.log("ha");
 }
 
-function render() {
-	sourceCanvas.drawCanvas();
-
-	var blocksNum = sourceCanvas.blocks.length;
-	for(var i = 0; i < blocksNum; i ++) {
-		sourceCanvas.blocks[i].update();
-	}
 
 
-	var newBlock = new Block();
-	sourceCanvas.blocks.push(newBlock);
 
-	requestAnimationFrame(render);
-}
+canvas.width = width;
+canvas.height = height;
 
-var sourceCanvas = new SourceCanvas();
-
-sourceCanvas.getStream();
+getStream();
