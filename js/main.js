@@ -35,7 +35,7 @@ SourceCanvas.prototype.getStream = function() {
  			function(localMediaStream){
  				this.video.src = window.URL.createObjectURL(localMediaStream);
  				this.video.onloadedmetadata = function(e) {
-		      render();
+		      onFrame;
 		    }
 			},
 	   	function(e){
@@ -74,7 +74,7 @@ Block.prototype.update = function() {
 	console.log("ha");
 }
 
-function render() {
+function onFrame(event) {
 	sourceCanvas.drawCanvas();
 
 	var blocksNum = sourceCanvas.blocks.length;
@@ -86,7 +86,6 @@ function render() {
 	var newBlock = new Block();
 	sourceCanvas.blocks.push(newBlock);
 
-	requestAnimationFrame(render);
 }
 
 var sourceCanvas = new SourceCanvas();
