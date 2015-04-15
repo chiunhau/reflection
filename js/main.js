@@ -4,20 +4,20 @@
   window.requestAnimationFrame = requestAnimationFrame;
 })();
 
-
-	var canvas = document.getElementById('sourceCanvas');
-	var video = document.getElementById('video');
-	var width = 800;
-	var height = 600;	
-	var xParts = 400;
-	var yParts = 300;
-	var xSide = Math.floor(width / xParts);
-	var ySide = Math.floor(height / yParts);
-	var center = view.center;
-	var currentFrame;
-	var blocks = [];
-	var okGo = false;
-	var sizeCounter = 150;
+var canvas = document.getElementById('sourceCanvas');
+var video = document.getElementById('video');
+var width = 800;
+var height = 600;	
+var xParts = 200;
+var yParts = 150;
+var xSide = Math.floor(width / xParts);
+var ySide = Math.floor(height / yParts);
+var center = view.center;
+var currentFrame;
+var blocks = [];
+var okGo = false;
+var sizeCounter = 15;
+var counter = 0;
 
 function getStream() {
 	navigator.getMedia = navigator.getUserMedia || 
@@ -36,8 +36,7 @@ function getStream() {
  					setTimeout(function(){ 
  						okGo = true;
  						onFrame(); 
- 					}, 1000);
-		      
+ 					}, 1000); 
 		    }
 			},
 	   	function(e){
@@ -55,6 +54,7 @@ function onFrame(event) {
   c.restore();
   currentFrame = c.getImageData(0, 0, width, height);
 
+
  	var blocksNum = blocks.length;
 	for(var i = 0; i < blocksNum; i ++) {
 		blocks[i].update();
@@ -62,10 +62,11 @@ function onFrame(event) {
 
 	if (blocksNum >= 10000) {
 		okGo = false;
+		console.log('20000');
 	};
 
 	if (okGo) {
-		sizeCounter *= 0.999;
+		sizeCounter *= 0.9995;
 		for (var i = 0; i < 1; i++) {
 
 			var newBlock = new Block();
@@ -74,7 +75,8 @@ function onFrame(event) {
 		
 		/*
 		counter += 1;
-		if (counter === 10) {
+		if (counter === 5) {
+			sizeCounter *= 0.995;
 			var newBlock = new Block();
 			blocks.push(newBlock);
 			counter = 0;
@@ -94,8 +96,8 @@ function Block() {
 
 	this.pixelPos = (width * 4) * blockCenterY + blockCenterX * 4; //number
 	this.radius = sizeCounter; 
-	var topLeft = new Point(blockCenterX, blockCenterY);
-	var rectSize = new Size(this.radius, this.radius);
+	var topLeft = new Point(blockCenterX - this.radius, blockCenterY - this.radius);
+	var rectSize = new Size(this.radius * 2, this.radius * 2);
 	var rectangle = new Rectangle(topLeft, rectSize);
 	this.path = new Path.Rectangle(rectangle);
 }
