@@ -14,6 +14,8 @@ var xSide = Math.floor(width / xParts);
 var ySide = Math.floor(height / yParts);
 var center = view.center;
 var currentFrame;
+var bnwCanvas = document.getElementById('bnwCanvas');
+var contextB = bnwCanvas.getContext('2d');
 var blocks = [];
 var okGo = false;
 var sizeCounter = 15;
@@ -36,7 +38,7 @@ function getStream() {
  					setTimeout(function(){ 
  						okGo = true;
  						onFrame(); 
- 					}, 1000); 
+ 					}, 2000); 
 		    }
 			},
 	   	function(e){
@@ -53,7 +55,19 @@ function onFrame(event) {
   c.drawImage(video, -width, 0, width, height);
   c.restore();
   currentFrame = c.getImageData(0, 0, width, height);
+  
+  
+  bnwCanvas = contextB.getImageData(0, 0, width, height);
+  bnwCanvas.data = currentFrame.data;
+  var n = bnwCanvas.data.length;
+  for (var i = 0; i < n; i ++) {
+  	var grayscale = bnwCanvas.data[i] * 0.3 + bnwCanvas.data[i+1] * 0.59 + bnwCanvas.data[i+2] * 0.11;
+    bnwCanvas.data[i  ] = grayscale;        // red
+    bnwCanvas.data[i+1] = grayscale;        // green
+    bnwCanvas.data[i+2] = grayscale;        // blue
+  }
 
+  contextB.putImageData(bnwCanvas, 0, 0);
 
  	var blocksNum = blocks.length;
 	for(var i = 0; i < blocksNum; i ++) {
