@@ -1,8 +1,3 @@
-(function() {
-  var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-  window.requestAnimationFrame = requestAnimationFrame;
-})();
 var video = document.getElementById('video');
 
 function getStream() {
@@ -20,7 +15,6 @@ function getStream() {
  				video.src = window.URL.createObjectURL(localMediaStream);
  				video.onloadedmetadata = function(e) {
  					setTimeout(function(){ 
- 						okGo = true;
  						onFrame(); 
  					}, 2000); 
 		    }
@@ -45,19 +39,29 @@ Canvas.prototype.draw = function() {
 	this.ctx.restore();
 };
 
+Canvas.prototype.crop = function(left, top, width, height) {
+	this.ctx.save();
+	this.ctx.scale(-1, 1);
+	this.ctx.drawImage(video, left, top, width, height, -this.width , 0, width, height);
+	this.ctx.restore();
+}
+
 function onFrame(event) {
 	mainCanvas.draw();
 	leftTopCanvas.draw();
 	leftMid1Canvas.draw();
 	leftMid2Canvas.draw();
-	leftBotCanvas.draw();
+	leftBot1Canvas.draw();
+	leftBot2Canvas.draw();
+	//rightCanvas.crop(400, 0, 200,600);
 
 }
 
-var mainCanvas 		= new Canvas(document.getElementById('mainCanvas'), 		 800, 600);
-var leftTopCanvas = new Canvas(document.getElementById('leftTopCanvas'),	 200, 150);
+var mainCanvas 		 = new Canvas(document.getElementById('mainCanvas'),800, 600);
+var leftTopCanvas  = new Canvas(document.getElementById('leftTopCanvas'),	 200, 150);
 var leftMid1Canvas = new Canvas(document.getElementById('leftMid1Canvas'), 100, 75);
 var leftMid2Canvas = new Canvas(document.getElementById('leftMid2Canvas'), 100, 75);
-var leftBotCanvas = new Canvas(document.getElementById('leftBotCanvas'),	 150, 150);
+var leftBot1Canvas  = new Canvas(document.getElementById('leftBot1Canvas'),	 150, 150);
+var leftBot2Canvas  = new Canvas(document.getElementById('leftBot2Canvas'),	 150, 60);
 
 getStream();

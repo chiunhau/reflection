@@ -1,0 +1,30 @@
+#mainCanvas {
+	-webkit-filter: brightness(1.3) contrast(1.5);
+}
+#leftTopCanvas {
+	left: 0;
+	top: 0;
+	-webkit-filter: sepia(0.9);
+}
+#leftMid1Canvas {
+	left: 0;
+	top: 150px;
+	-webkit-filter: saturate(4);
+}
+#leftMid2Canvas {
+	left: 70px;
+	top: 150px;
+	-webkit-filter: contrast(2);
+}
+
+#leftBot1Canvas {
+	left: 50;
+	top: 300px;
+	-webkit-filter: opacity(0.5) brightness(2);
+}
+
+#leftBot2Canvas {
+	left: 0;
+	top: 500px;
+	-webkit-filter: grayscale(1);
+}
